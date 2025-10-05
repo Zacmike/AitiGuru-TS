@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
     
     
 app = FastAPI(
-    title = 'E-Commerce API',
+    title = 'AitiGuru API',
     description = 'API для управления заказами и номенклатурой',
     version = '1.0.0',
     lifespan = lifespan
@@ -44,7 +44,7 @@ async def add_item_to_order(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code = 500, detail = f'Internal server error: {str(e)}')
+        raise HTTPException(status_code = 500, detail = f'Внутренняя ошибка сервера: {str(e)}')
     
 @app.get('/health')
 async def health_check():

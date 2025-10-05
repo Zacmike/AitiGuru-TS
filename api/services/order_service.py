@@ -18,10 +18,10 @@ class OrderService:
             )
             
             if not order:
-                raise HTTPException(status_code = 404, detail = 'Order not found')
+                raise HTTPException(status_code = 404, detail = 'Заказ не найден')
             
             if order['status'] != 'active':
-                raise HTTPException(status_code = 400, detail = 'Cannot modify completed order')
+                raise HTTPException(status_code = 400, detail = 'Нельзя изменить выполненный заказ')
             
             product = await db_conn.fetchrow(
                 'SELECT id, quantity, price FROM nomenclature WHERE id = $1',
@@ -29,7 +29,7 @@ class OrderService:
             )
             
             if not product:
-                raise HTTPException(status_code = 404, detail = 'Product not found')
+                raise HTTPException(status_code = 404, detail = 'Товар не найден')
             
             existing_item = await db_conn.fetchrow(
                 'SELECT id, quantity FROM order_items WHERE order_id = $1 AND nomenclature_id = $2',
@@ -43,7 +43,7 @@ class OrderService:
             if product['quantity'] < total_quantity:
                 raise HTTPException(
                     statuc_code = 400,
-                    detail = f'Not enough stock. Available: {product['quantity']}, Requested: {total_quantity}'
+                    detail = f'Недостаточное количество. Доступное: {product['quantity']}, Запрошенное: {total_quantity}'
                 )
                 
             if existing_item:
@@ -55,7 +55,7 @@ class OrderService:
                 
                 order_item_id = existing_item['id']
                 new_quantity = total_quantity
-                message = 'Product quantity updated in order'
+                message = 'Количество товара в заказе обновлено'
                 
             else:
                 order_item_id = await db_conn.fetchval(
@@ -66,7 +66,7 @@ class OrderService:
                 )
                 
                 new_quantity = quantity
-                message = 'Product added to order'
+                message = 'Товар добавлен в заказ'
                 
                 
             await OrderService._update_order_total(db_conn, order_id)
